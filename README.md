@@ -14,8 +14,8 @@ Generating authentication tokens:
 import { signAuthToken } from "@chronicleprotocol/api-auth";
 
 const { token, message } = signAuthToken({
-	// private key is 0x prefixed 32 byte hex string
-	privateKey: "0xabc...",
+  // private key is 0x prefixed 32 byte hex string
+  privateKey: "0xabc...",
 });
 
 // `token` is hex string to be included as Authorization header (see below)
@@ -30,10 +30,10 @@ Using an auth token to fetch an API endpoint:
 ```js
 // token is received from the server
 fetch(
-		"https://chroniclelabs.org/api/pairs",
-		{
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		},
-	)```
+    "https://chroniclelabs.org/api/pairs",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )```
