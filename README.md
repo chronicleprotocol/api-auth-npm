@@ -30,10 +30,10 @@ Using an auth token to fetch an API endpoint:
 ```js
 // token is received from the server
 fetch(
-    "https://chroniclelabs.org/api/pairs",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  "https://chroniclelabs.org/api/pairs",
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  )```
+  },
+)```
