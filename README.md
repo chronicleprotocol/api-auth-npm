@@ -19,7 +19,8 @@ const { token, message } = signAuthToken({
 });
 
 // `token` is hex string to be included as Authorization header (see below)
-// `message` is object containing decoded data within `token`. Optional, but can be useful for programmatic token handling
+// `message` is object containing decoded data within `token`. Optional,
+// but can be useful for programmatic token handling
 
 ```
 
