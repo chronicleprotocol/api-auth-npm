@@ -36,5 +36,5 @@ fetch(
       Authorization: `Bearer ${token}`,
     },
   },
-)
+);
 ```
