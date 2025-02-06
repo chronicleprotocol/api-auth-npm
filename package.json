@@ -1,0 +1,62 @@
+{
+	"name": "@chronicleprotocol/api-auth",
+	"version": "0.3.4",
+	"description": "The API authenticaion library for Chronicle Protocol",
+	"type": "module",
+	"main": "lib/index.js",
+	"scripts": {
+		"build": "tsc",
+		"build:watch": "tsc --watch",
+		"clean": "rm -rf lib",
+		"format": "prettier --write .",
+		"lint": "npx eslint src",
+		"lint:fix": "npx eslint --fix src",
+		"test": "vitest run --config vitest.config.ts",
+		"prepare": "npm run build",
+		"prepublishOnly": "npm test && npm run lint",
+		"preversion": "npm run lint",
+		"version": "npm run format && git add -A src",
+		"postversion": "git push && git push --tags"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/chronicleprotocol/api-auth-npm.git"
+	},
+	"keywords": [
+		"chronicle",
+		"chronicle api",
+		"chronicle labs",
+		"chronicle labs api",
+		"chronicle protocol",
+		"chronicle protocol api"
+	],
+	"author": "Brian Belhumeur",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/chronicleprotocol/api-auth-npm/issues"
+	},
+	"homepage": "https://github.com/chronicleprotocol/api-auth-npm#readme",
+	"devDependencies": {
+		"@eslint/js": "^9.19.0",
+		"@types/eslint__js": "^8.42.3",
+		"@types/node": "^22.13.1",
+		"@typescript-eslint/eslint-plugin": "8.23.0",
+		"@typescript-eslint/parser": "8.23.0",
+		"@vitejs/plugin-react": "^4.3.4",
+		"@vitest/coverage-v8": "^3.0.5",
+		"eslint": "^9.19.0",
+		"prettier": "3.4.2",
+		"prettier-plugin-organize-imports": "^4.1.0",
+		"typescript": "^5.7.3",
+		"typescript-eslint": "^8.23.0",
+		"vitest": "^3.0.5"
+	},
+	"files": [
+		"lib/**/*"
+	],
+	"dependencies": {
+		"@ethereumjs/util": "^9.1.0",
+		"viem": "^2.22.22"
+	},
+	"moduleResolution": "nodeNext"
+}
