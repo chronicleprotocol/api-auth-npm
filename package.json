@@ -1,9 +1,12 @@
 {
 	"name": "@chronicleprotocol/api-auth",
-	"version": "0.3.4",
+	"version": "0.3.5",
 	"description": "The API authenticaion library for Chronicle Protocol",
 	"type": "module",
 	"main": "lib/index.js",
+	"bin": {
+		"signAuthToken": "bin/signAuthToken.ts"
+	},
 	"scripts": {
 		"build": "tsc",
 		"build:watch": "tsc --watch",
@@ -11,12 +14,12 @@
 		"format": "prettier --write .",
 		"lint": "npx eslint src",
 		"lint:fix": "npx eslint --fix src",
-		"test": "vitest run --config vitest.config.ts",
 		"prepare": "npm run build",
 		"prepublishOnly": "npm test && npm run lint",
 		"preversion": "npm run lint",
-		"version": "npm run format && git add -A src",
-		"postversion": "git push && git push --tags"
+		"postversion": "git push && git push --tags",
+		"test": "vitest run --config vitest.config.ts",
+		"version": "npm run format && git add -A src"
 	},
 	"repository": {
 		"type": "git",
@@ -47,6 +50,7 @@
 		"eslint": "^9.19.0",
 		"prettier": "3.4.2",
 		"prettier-plugin-organize-imports": "^4.1.0",
+		"tsx": "^4.19.2",
 		"typescript": "^5.7.3",
 		"typescript-eslint": "^8.23.0",
 		"vitest": "^3.0.5"
