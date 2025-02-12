@@ -1,7 +1,8 @@
-#!/usr/bin/env npx tsx
+#!/usr/bin/env node
 
-import { Hex } from "viem";
-import { signAuthToken } from "../src/index";
+import console from "node:console";
+import process from "node:process";
+import { signAuthToken } from "../lib/index.js";
 
 let privateKey = (process.argv[2] || "").replace("--privateKey=", "");
 
@@ -21,6 +22,6 @@ if (privateKey.length !== 66) {
 	process.exit(1);
 }
 
-signAuthToken({ privateKey: privateKey as Hex }).then((result) => {
+signAuthToken({ privateKey: privateKey }).then((result) => {
 	console.log(result.token);
 });
