@@ -1,13 +1,6 @@
-import { ecrecover, pubToAddress } from "@ethereumjs/util";
-import {
-	Address,
-	bytesToHex,
-	getAddress,
-	hashMessage,
-	Hex,
-	hexToBytes,
-	parseSignature,
-} from "viem";
+import { secp256k1 } from "@noble/curves/secp256k1";
+import { Address, getAddress, hashMessage, Hex, parseSignature } from "viem";
+import { publicKeyToAddress } from "viem/accounts";
 
 // had to made this sync version of viem's verifyMessage, which is unnecessarily async
 export default function verifyMessage({
@@ -19,17 +12,19 @@ export default function verifyMessage({
 	message: string | { raw: Hex };
 	signature: Hex;
 }) {
-	const { r, s, v } = parseSignature(signature);
+	const { r, s, v, yParity } = parseSignature(signature);
 	const hashedMessage = hashMessage(message);
 
-	const publicKey = ecrecover(
-		hexToBytes(hashedMessage),
-		v!,
-		hexToBytes(r),
-		hexToBytes(s),
-	);
+	const recovery = yParity ?? Number(v! - 27n);
 
-	const recoveredAddress = getAddress(bytesToHex(pubToAddress(publicKey)));
+	const recoveredSignature = secp256k1.Signature.fromCompact(
+		r.slice(2) + s.slice(2),
+	).addRecoveryBit(recovery);
+	const publicKey = recoveredSignature
+		.recoverPublicKey(hashedMessage.slice(2))
+		.toHex(false);
+
+	const recoveredAddress = publicKeyToAddress(`0x${publicKey}`);
 
 	return recoveredAddress === getAddress(address);
 }
