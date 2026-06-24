@@ -69,18 +69,19 @@ export async function signAuthToken({
  * credentials via `deriveKeyFromCredentials`, so the same (username, password)
  * always maps to the same signer address.
  *
- * Inputs are typed `unknown` so callers can pass untrusted request data
- * directly; validation failures throw `AuthTokenError` with a machine-readable
- * `code` (see `AuthTokenErrorCode`).
+ * The runtime guards below are retained as defense-in-depth: callers may pass
+ * untrusted/untyped data (e.g. an HTTP request body) despite the static types.
+ * Validation failures throw `AuthTokenError` with a machine-readable `code`
+ * (see `AuthTokenErrorCode`).
  */
 export async function signAuthTokenFromCredentials({
 	username,
 	password,
 	duration,
 }: {
-	username: unknown;
-	password: unknown;
-	duration?: unknown;
+	username: string;
+	password: string;
+	duration?: number;
 }): Promise<{ token: string; message: AuthTokenMessage }> {
 	if (
 		typeof username !== "string" ||
@@ -96,7 +97,7 @@ export async function signAuthTokenFromCredentials({
 
 	let validatedDuration: number | undefined;
 	if (typeof duration !== "undefined") {
-		// Reject non-numbers, NaN, Infinity, fractional, and non-positive values.
+		// Reject NaN, Infinity, fractional, and non-positive values.
 		// `signAuthToken` would otherwise accept NaN (NaN > maxAge is false) and
 		// produce a token with `validTo = NaN`.
 		if (

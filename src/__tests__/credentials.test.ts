@@ -10,6 +10,10 @@ import {
 	verifyAuthToken,
 } from "../index";
 
+// Several cases below deliberately pass inputs that violate the static types
+// to exercise the runtime guards; cast through this alias to keep them honest.
+type Credentials = Parameters<typeof signAuthTokenFromCredentials>[0];
+
 describe("username normalization", () => {
 	test("lowercases the username", () => {
 		expect(normalizeUsername("Alice")).toBe("alice");
@@ -87,7 +91,7 @@ describe("signAuthTokenFromCredentials", () => {
 		["non-string username", { username: 1, password: "password123" }],
 	])("rejects %s with MISSING_FIELDS", async (_label, credentials) => {
 		await expect(
-			signAuthTokenFromCredentials(credentials),
+			signAuthTokenFromCredentials(credentials as Credentials),
 		).rejects.toMatchObject({
 			name: "AuthTokenError",
 			code: AuthTokenErrorCode.MISSING_FIELDS,
@@ -107,7 +111,7 @@ describe("signAuthTokenFromCredentials", () => {
 				username: "alice",
 				password: "password123",
 				duration,
-			}),
+			} as Credentials),
 		).rejects.toMatchObject({
 			name: "AuthTokenError",
 			code: AuthTokenErrorCode.INVALID_DURATION,

@@ -12,9 +12,9 @@ export declare function signAuthToken({ privateKey, duration, }: {
     message: AuthTokenMessage;
 }>;
 export declare function signAuthTokenFromCredentials({ username, password, duration, }: {
-    username: unknown;
-    password: unknown;
-    duration?: unknown;
+    username: string;
+    password: string;
+    duration?: number;
 }): Promise<{
     token: string;
     message: AuthTokenMessage;
