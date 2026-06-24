@@ -23,6 +23,30 @@ const { token, message } = signAuthToken({
 // but can be useful for programmatic token handling
 ```
 
+Generating authentication tokens from a username/password pair:
+
+```js
+import { signAuthTokenFromCredentials } from "@chronicleprotocol/api-auth";
+
+// The private key is derived deterministically from the credentials, so the
+// same (username, password) pair always maps to the same signer address.
+// Usernames are case-insensitive (lowercased + Unicode NFC normalized);
+// passwords are case-sensitive.
+const { token, message } = await signAuthTokenFromCredentials({
+	username: "myusername",
+	password: "mypassword123",
+	// duration: 1800, // optional, in seconds
+});
+
+// Validation failures throw an `AuthTokenError` with a machine-readable
+// `code` (see `AuthTokenErrorCode`): MISSING_FIELDS, INVALID_DURATION,
+// DURATION_EXCEEDS_MAX, or TOKEN_FAILED.
+```
+
+The lower-level helpers `deriveKeyFromCredentials(username, password)` and
+`normalizeUsername(username)` are also exported, e.g. for computing the signer
+address for a credential pair without signing a token.
+
 To generate a token via the command line, use:
 
 ```bash

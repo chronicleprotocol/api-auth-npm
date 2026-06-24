@@ -5,17 +5,24 @@ import {
 	AUTH_TOKEN_VERSION,
 	AuthTokenCode,
 } from "./constants.js";
+import {
+	AuthTokenError,
+	AuthTokenErrorCode,
+	deriveKeyFromCredentials,
+} from "./credentials.js";
 import verifyMessage from "./verifyMessage.js";
 
-import type {
-	AuthTokenMessage,
-} from "./types.js";
+import type { AuthTokenMessage } from "./types.js";
 import { authTokenBytesToMessage, authTokenMessageToBytes } from "./utils.js";
 
 export { AuthTokenCode } from "./constants.js";
-export type {
-	AuthTokenMessage,
-} from "./types.js";
+export {
+	AuthTokenError,
+	AuthTokenErrorCode,
+	deriveKeyFromCredentials,
+	normalizeUsername,
+} from "./credentials.js";
+export type { AuthTokenMessage } from "./types.js";
 
 export async function signAuthToken({
 	privateKey,
@@ -54,6 +61,69 @@ export async function signAuthToken({
 		signature.replace(/^0x/, "") + bytesToHex(rawMessage).replace(/^0x/, "");
 
 	return { token: signatureAndMessage, message };
+}
+
+/**
+ * Sign an auth token using a username/password pair instead of an explicit
+ * private key. The private key is derived deterministically from the
+ * credentials via `deriveKeyFromCredentials`, so the same (username, password)
+ * always maps to the same signer address.
+ *
+ * Inputs are typed `unknown` so callers can pass untrusted request data
+ * directly; validation failures throw `AuthTokenError` with a machine-readable
+ * `code` (see `AuthTokenErrorCode`).
+ */
+export async function signAuthTokenFromCredentials({
+	username,
+	password,
+	duration,
+}: {
+	username: unknown;
+	password: unknown;
+	duration?: unknown;
+}): Promise<{ token: string; message: AuthTokenMessage }> {
+	if (
+		typeof username !== "string" ||
+		typeof password !== "string" ||
+		!username ||
+		!password
+	) {
+		throw new AuthTokenError(
+			AuthTokenErrorCode.MISSING_FIELDS,
+			"Username and password are required",
+		);
+	}
+
+	let validatedDuration: number | undefined;
+	if (typeof duration !== "undefined") {
+		// Reject non-numbers, NaN, Infinity, fractional, and non-positive values.
+		// `signAuthToken` would otherwise accept NaN (NaN > maxAge is false) and
+		// produce a token with `validTo = NaN`.
+		if (
+			typeof duration !== "number" ||
+			!Number.isInteger(duration) ||
+			duration <= 0
+		) {
+			throw new AuthTokenError(
+				AuthTokenErrorCode.INVALID_DURATION,
+				"Duration, if provided, must be a positive integer number of seconds",
+			);
+		}
+		validatedDuration = duration;
+	}
+
+	const privateKey = deriveKeyFromCredentials(username, password);
+
+	try {
+		return await signAuthToken({ privateKey, duration: validatedDuration });
+	} catch (err) {
+		const message =
+			err instanceof Error ? err.message : "Failed to generate auth token";
+		const code = message.startsWith("Duration exceeds max")
+			? AuthTokenErrorCode.DURATION_EXCEEDS_MAX
+			: AuthTokenErrorCode.TOKEN_FAILED;
+		throw new AuthTokenError(code, message);
+	}
 }
 
 export function verifyAuthToken(authToken: string): {

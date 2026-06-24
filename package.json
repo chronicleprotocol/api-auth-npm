@@ -1,6 +1,6 @@
 {
 	"name": "@chronicleprotocol/api-auth",
-	"version": "0.3.6",
+	"version": "0.3.7",
 	"description": "The API authenticaion library for Chronicle Protocol",
 	"type": "module",
 	"main": "lib/index.js",
